@@ -5,6 +5,21 @@
 #include "Emitter.h"
 #include "Shape.h"
 
+
+class Player: public Sprite{
+public:
+    void distanceToHead(){
+        glm::vec3 current=pos;
+        while(inside(current)){
+            current.y--;
+            cout << current << endl;
+        }
+        posToHead=pos.y-current.y-1;
+    }
+    float energy=0;
+    float posToHead=0;
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -23,6 +38,8 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+        void gameStart();
+        void gameStop();
     
         bool bHide;
         ofxFloatSlider energy;
@@ -33,7 +50,7 @@ class ofApp : public ofBaseApp{
         ofxPanel gui;
     
     
-        Sprite player;
+        Player player;
     
         ofImage bg;
         bool bgLoaded;
@@ -41,4 +58,6 @@ class ofApp : public ofBaseApp{
         ofImage playerImg;
         bool playerLoaded;
         map<int, bool> keymap;
+    
+        bool gameStarted;
 };

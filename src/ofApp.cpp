@@ -1,8 +1,19 @@
 #include "ofApp.h"
 
+
+void ofApp::gameStart(){
+    player.energy=energy;
+    gameStarted=true;
+}
+
+void ofApp::gameStop(){
+    gameStarted=false;
+    player.pos=player.pos=glm::vec3(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
+    player.rot=0;
+}
 //--------------------------------------------------------------
 void ofApp::setup(){
-    bgLoaded = bg.load("images/spaceBackground.png");
+//    bgLoaded = bg.load("images/spaceBackground.png");
     playerLoaded = playerImg.load("images/ship.png");
     if (playerLoaded) player.setImage(playerImg);
     
@@ -14,13 +25,33 @@ void ofApp::setup(){
 
     bHide = false;
     
-    player.pos=glm::vec3(ofGetWidth()/2,ofGetHeight()/2,0);
+    player.distanceToHead();
+    player.pos=glm::vec3(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
+    player.energy=energy;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     float scale=playerSize;
     player.scale = glm::vec3(scale,scale,scale);
+    
+//    bound player within the screen
+    if(player.pos.x+player.posToHead*scale>ofGetWindowWidth()){
+        player.pos.x=ofGetWindowWidth()-player.posToHead*scale;
+    }
+    if(player.pos.y+player.posToHead*scale>ofGetWindowHeight()){
+        player.pos.y=ofGetWindowHeight()-player.posToHead*scale;
+    }
+    if(player.pos.x<player.posToHead*scale){
+        player.pos.x=player.posToHead*scale;
+    }
+    if(player.pos.y<player.posToHead*scale){
+        player.pos.y=player.posToHead*scale;
+    }
+
+    if(player.energy<=0){
+        gameStop();
+    }
 }
 
 //--------------------------------------------------------------
@@ -35,8 +66,29 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    keymap[key] = true;
+    switch (key) {
+        case 'F':
+        case 'f':
+            ofToggleFullscreen();
+            break;
+        case 'H':
+        case 'h':
+            bHide = !bHide;
+            break;
+        case 'Q':
+        case 'q':
+            gameStop();
+            break;
+        case ' ':
+            gameStart();
+            break;
+    }
     
+    if(!gameStarted){
+        return;
+    }
+    
+    keymap[key] = true;
     if(keymap[OF_KEY_UP]){
         player.pos+=(float)playerSpeed*player.heading();
     }
@@ -48,18 +100,6 @@ void ofApp::keyPressed(int key){
     }
     if(keymap[OF_KEY_LEFT]){
         player.rot-=(float)playerRotation;
-    }
-    
-    
-    switch (key) {
-        case 'F':
-        case 'f':
-            ofToggleFullscreen();
-            break;
-        case 'H':
-        case 'h':
-            bHide = !bHide;
-            break;
     }
 }
 
