@@ -25,12 +25,20 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
         bool bHide;
-        ofxFloatSlider rate;
-        ofxFloatSlider life;
-        ofxVec3Slider velocity;
-        ofxLabel screenSize;
-        ofxFloatSlider scale;
-        ofxFloatSlider rotationSpeed;
-
+        ofxFloatSlider energy;
+        ofxFloatSlider playerSpeed;
+        ofxFloatSlider playerRotation;
+        ofxFloatSlider playerSize;
+        
         ofxPanel gui;
+    
+    
+        Sprite player;
+    
+        ofImage bg;
+        bool bgLoaded;
+        
+        ofImage playerImg;
+        bool playerLoaded;
+        map<int, bool> keymap;
 };
