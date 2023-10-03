@@ -20,6 +20,12 @@ public:
     float posToHead=0;
 };
 
+class Shooter: public Emitter{
+public:
+    void spawnSprite();
+    void moveSprite(Sprite*);
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -46,17 +52,29 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider playerSpeed;
         ofxFloatSlider playerRotation;
         ofxFloatSlider playerSize;
-        
+    
+        ofxFloatSlider rate;
+        ofxFloatSlider life;
+        ofxVec3Slider velocity;
+        ofxLabel screenSize;
+        ofxFloatSlider fireSize;
+        ofxFloatSlider rotationSpeed;
+            
         ofxPanel gui;
     
     
         Player player;
+        Shooter shooter;
     
         ofImage bg;
         bool bgLoaded;
         
         ofImage playerImg;
         bool playerLoaded;
+    
+        ofImage fireImg;
+        bool fireLoaded;
+    
         map<int, bool> keymap;
     
         bool gameStarted;
