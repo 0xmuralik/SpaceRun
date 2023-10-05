@@ -26,7 +26,7 @@ public:
     void update();
     int spawnCount=1;
     float spriteSize;
-    float spritePower;
+    float spritePower=1;
 };
 
 class ofApp : public ofBaseApp{
@@ -59,10 +59,9 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider rate;
         ofxIntSlider count;
         ofxFloatSlider life;
-        ofxVec3Slider velocity;
+        ofxFloatSlider fireSpeed;
         ofxLabel screenSize;
         ofxFloatSlider fireSize;
-        ofxFloatSlider firePower;
             
         ofxPanel gui;
     

@@ -81,17 +81,16 @@ void ofApp::setup(){
     fireLoaded = fireImg.load("images/fire.png");
     
     gui.setup();
-    gui.add(energy.setup("Energy", 100, 10, 100));
-    gui.add(playerSpeed.setup("Speed", 1, 1, 10));
-    gui.add(playerRotation.setup("Rotation",1,1,100));
+    gui.add(energy.setup("Energy", 10, 1, 100));
+    gui.add(playerSpeed.setup("Speed", 3, 1, 10));
+    gui.add(playerRotation.setup("Rotation",1,1,2));
     gui.add(playerSize.setup("Player Size", .5, .1, 1.0));
     
-    gui.add(rate.setup("Fire rate", 1, 1, 10));
+    gui.add(rate.setup("Fire rate", .5, 1, 10));
     gui.add(count.setup("Spawn Count",1,1,10));
     gui.add(life.setup("life", 5, .1, 10));
-    gui.add(velocity.setup("velocity", ofVec3f(0, -200, 0), ofVec3f(-1000, -1000,-1000), ofVec3f(1000, 1000, 1000)));
+    gui.add(fireSpeed.setup("Fire Speed", 2,1,10));
     gui.add(fireSize.setup("Fire size", .3, .1, 1.0));
-    gui.add(firePower.setup("Fire power", 10, 1, 100));
 
     bHide = false;
     
@@ -117,10 +116,9 @@ void ofApp::update(){
     
     shooter.setRate(rate);
     shooter.setLifespan(life * 1000); // convert to milliseconds
-    shooter.setVelocity(ofVec3f(velocity->x, velocity->y, velocity->z));
+    shooter.setVelocity(ofVec3f(0, -1, 0)*fireSpeed*100);
     shooter.spawnCount=count;
     shooter.spriteSize=fireSize;
-    shooter.spritePower=firePower;
     shooter.update();
     
     if (!gameStarted) return;
