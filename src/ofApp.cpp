@@ -2,9 +2,13 @@
 
 
 void ofApp::gameStart(){
-    player.energy=energy;
-    gameStarted=true;
-    shooter.start();
+    if(!gameStarted){
+        gameStarted=true;
+        player.energy=energy;
+        player.pos=glm::vec3(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
+        player.rot=0;
+        shooter.start();
+    }
 }
 
 void ofApp::gameStop(){
@@ -82,7 +86,7 @@ void ofApp::setup(){
     gui.add(playerRotation.setup("Rotation",1,1,100));
     gui.add(playerSize.setup("Player Size", .5, .1, 1.0));
     
-    gui.add(rate.setup("Fire rate", 0.1, 1, 10));
+    gui.add(rate.setup("Fire rate", 1, 1, 10));
     gui.add(count.setup("Spawn Count",1,1,10));
     gui.add(life.setup("life", 5, .1, 10));
     gui.add(velocity.setup("velocity", ofVec3f(0, -200, 0), ofVec3f(-1000, -1000,-1000), ofVec3f(1000, 1000, 1000)));

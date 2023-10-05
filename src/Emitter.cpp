@@ -198,6 +198,7 @@ void Emitter::spawnSprite() {
 void Emitter::start() {
 	started = true;
 	lastSpawned = ofGetElapsedTimeMillis();
+    sys = new SpriteList();
 }
 
 void Emitter::stop() {
