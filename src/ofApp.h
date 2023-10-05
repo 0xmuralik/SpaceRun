@@ -24,6 +24,10 @@ class Shooter: public Emitter{
 public:
     void spawnSprite();
     void moveSprite(Sprite*);
+    void update();
+    int spawnCount=1;
+    float spriteSize;
+    float spriteRot;
 };
 
 class ofApp : public ofBaseApp{
@@ -54,11 +58,11 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider playerSize;
     
         ofxFloatSlider rate;
+        ofxIntSlider count;
         ofxFloatSlider life;
         ofxVec3Slider velocity;
         ofxLabel screenSize;
         ofxFloatSlider fireSize;
-        ofxFloatSlider rotationSpeed;
             
         ofxPanel gui;
     
