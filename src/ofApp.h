@@ -12,7 +12,6 @@ public:
         glm::vec3 current=pos;
         while(inside(current)){
             current.y--;
-            cout << current << endl;
         }
         posToHead=pos.y-current.y-1;
     }
@@ -27,7 +26,7 @@ public:
     void update();
     int spawnCount=1;
     float spriteSize;
-    float spriteRot;
+    float spritePower;
 };
 
 class ofApp : public ofBaseApp{
@@ -63,6 +62,7 @@ class ofApp : public ofBaseApp{
         ofxVec3Slider velocity;
         ofxLabel screenSize;
         ofxFloatSlider fireSize;
+        ofxFloatSlider firePower;
             
         ofxPanel gui;
     

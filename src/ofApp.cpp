@@ -11,9 +11,7 @@ void ofApp::gameStop(){
     gameStarted=false;
     shooter.stop();
 }
-// spawnSprite - we override this function in the Emitter class to spawn our
-// "custom" Agent sprite.
-//
+
 void Shooter::spawnSprite() {
     Sprite sprite;
     if (haveChildImage) sprite.setImage(childImage);
@@ -23,75 +21,51 @@ void Shooter::spawnSprite() {
     sprite.birthtime = ofGetElapsedTimeMillis();
     sys->add(sprite);
 }
-// moveSprite - we override this function in the Emitter class to implment
-// "following" motion towards the target
-//
+
 void Shooter::moveSprite(Sprite* sprite) {
-    // Get a pointer to the app so we can access application
-    // data such as the target sprite.
-    //
     ofApp* theApp = (ofApp*)ofGetAppPtr();
-    // rotate sprite to point towards target
-    // - find vector "v" from sprite to target
-    // - set rotation of sprite to align with v
-    //
     glm::vec3 v = glm::normalize(theApp->player.pos - sprite->pos);
     glm::vec3 u = glm::vec3(0, -1, 0);
     float a = glm::orientedAngle(u, v, glm::vec3(0, 0, 1));
     sprite->rot = glm::degrees(a);
-    // Calculate new velocity vector
-    // with same speed (magnitude) as the old one but in direction of "v"
-    //
     sprite->velocity = glm::length(sprite->velocity) * v;
-    // Now move the sprite in the normal way (along velocity vector)
-    //
     Emitter::moveSprite(sprite);
 }
 
 void Shooter::update(){
     if (!started) return;
+    ofApp* theApp = (ofApp*)ofGetAppPtr();
     float time = ofGetElapsedTimeMillis();
-
     if ((time - lastSpawned) > (1000.0 / rate)) {
-
-        // call virtual to spawn a new sprite
-        //
         for(int i=0;i<spawnCount;i++){
             spawnSprite();
         }
         lastSpawned = time;
     }
 
-
-
-    // update sprite list
-    //
     if (sys->sprites.size() == 0) return;
     vector<Sprite>::iterator s = sys->sprites.begin();
     vector<Sprite>::iterator tmp;
 
-    // check which sprites have exceed their lifespan and delete
-    // from list.  When deleting multiple objects from a vector while
-    // traversing at the same time, use an iterator.
-    //
     while (s != sys->sprites.end()) {
         if (s->lifespan != -1 && s->age() > s->lifespan) {
-            //            cout << "deleting sprite: " << s->name << endl;
             tmp = sys->sprites.erase(s);
             s = tmp;
         }
+        else if(theApp->player.inside(s->pos)){
+            tmp = sys->sprites.erase(s);
+            s = tmp;
+            theApp->player.energy-=spritePower;
+        }
         else {
             s->scale = glm::vec3(spriteSize, spriteSize, spriteSize);
-            s->rotationSpeed = spriteRot;
             s++;
         }
     }
 
-    
     for (int i = 0; i < sys->sprites.size(); i++) {
         moveSprite(&sys->sprites[i]);
     }
-    
 }
 
 //--------------------------------------------------------------
@@ -106,13 +80,14 @@ void ofApp::setup(){
     gui.add(energy.setup("Energy", 100, 10, 100));
     gui.add(playerSpeed.setup("Speed", 1, 1, 10));
     gui.add(playerRotation.setup("Rotation",1,1,100));
-    gui.add(playerSize.setup("Player Size", .1, .05, 1.0));
+    gui.add(playerSize.setup("Player Size", .5, .1, 1.0));
     
-    gui.add(rate.setup("Fire rate", 1, 1, 10));
+    gui.add(rate.setup("Fire rate", 0.1, 1, 10));
     gui.add(count.setup("Spawn Count",1,1,10));
     gui.add(life.setup("life", 5, .1, 10));
     gui.add(velocity.setup("velocity", ofVec3f(0, -200, 0), ofVec3f(-1000, -1000,-1000), ofVec3f(1000, 1000, 1000)));
-    gui.add(fireSize.setup("Fire size", .5, .1, 1.0));
+    gui.add(fireSize.setup("Fire size", .3, .1, 1.0));
+    gui.add(firePower.setup("Fire power", 10, 1, 100));
 
     bHide = false;
     
@@ -141,17 +116,8 @@ void ofApp::update(){
     shooter.setVelocity(ofVec3f(velocity->x, velocity->y, velocity->z));
     shooter.spawnCount=count;
     shooter.spriteSize=fireSize;
+    shooter.spritePower=firePower;
     shooter.update();
-    
-//    for (int i = 0; i < shooter.sys->sprites.size(); i++) {
-//        // Get values from sliders and update sprites dynamically
-//        //
-//        float sc = fireSize;
-//        float rs = rotationSpeed;
-//        shooter.sys->sprites[i].scale = glm::vec3(sc, sc, sc);
-//        shooter.sys->sprites[i].rotationSpeed = rs;
-//    }
-    
     
     if (!gameStarted) return;
     //    bound player within the screen
