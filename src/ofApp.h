@@ -81,4 +81,20 @@ class ofApp : public ofBaseApp{
         map<int, bool> keymap;
     
         bool gameStarted;
+        
+        enum states{
+            Landing,
+            Started,
+            Finish,
+            LevelOne,
+            LevelTwo,
+            LevelThree
+        };
+        
+        ofTrueTypeFont font;
+    
+        float gameStartTime;
+        float gameEndTime;
+        
+        states state;
 };

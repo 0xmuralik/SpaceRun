@@ -2,18 +2,24 @@
 
 
 void ofApp::gameStart(){
-    if(!gameStarted){
+    if(state!=Started){
+        state=Started;
         gameStarted=true;
         player.energy=energy;
         player.pos=glm::vec3(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
         player.rot=0;
         shooter.start();
+        gameStartTime=ofGetElapsedTimeMillis();
+        gameEndTime=0;
     }
 }
 
 void ofApp::gameStop(){
+    if(state==Finish) return;
+    state=Finish;
     gameStarted=false;
     shooter.stop();
+    gameEndTime=ofGetElapsedTimeMillis();
 }
 
 void Shooter::spawnSprite() {
@@ -74,11 +80,15 @@ void Shooter::update(){
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-//    bgLoaded = bg.load("images/spaceBackground.png");
+    ofSetBackgroundColor(ofColor::black);
+    font.load("fonts/pixeboy-font/Pixeboy-z8XGD.ttf", 20);
+    //    bgLoaded = bg.load("images/spaceBackground.png");
     playerLoaded = playerImg.load("images/ship.png");
     if (playerLoaded) player.setImage(playerImg);
+    player.distanceToHead();
     
     fireLoaded = fireImg.load("images/fire.png");
+    if (fireLoaded) shooter.setChildImage(fireImg);
     
     gui.setup();
     gui.add(energy.setup("Energy", 10, 1, 100));
@@ -91,18 +101,16 @@ void ofApp::setup(){
     gui.add(life.setup("life", 5, .1, 10));
     gui.add(fireSpeed.setup("Fire Speed", 2,1,10));
     gui.add(fireSize.setup("Fire size", .3, .1, 1.0));
-
+    
     bHide = false;
     
-    player.distanceToHead();
     player.pos=glm::vec3(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
     player.energy=energy;
     
-    ofSetBackgroundColor(ofColor::black);
-
     shooter.pos = glm::vec3(ofGetWindowWidth() / 2.0, ofGetWindowHeight() / 2.0, 0);
     shooter.drawable = false;
-    if (fireLoaded) shooter.setChildImage(fireImg);
+    
+    state=Landing;
 }
 
 //--------------------------------------------------------------
@@ -154,12 +162,30 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     if (bgLoaded) bg.draw(0, 0, ofGetWidth(), ofGetHeight());
-    player.draw();
-    shooter.draw();
+    int time=(ofGetElapsedTimeMillis()-gameStartTime)/1000;
+    if(state!=Started){
+        time=0;
+    }
+    if(state==Finish){
+        time=(gameEndTime-gameStartTime)/1000;
+    }
+    
+    string topRight="Energy:\t"+std::to_string((int)player.energy)+"\nTime:\t"+std::to_string(time);
+    font.drawString(topRight, ofGetWindowWidth()-font.stringWidth(topRight)-10, font.stringHeight("Energy: 100")+10);
+    
+    if(state==Landing){
+        string message = "Press Space to start game";
+        font.drawString(message,ofGetWindowWidth()/2-font.stringWidth(message)/2,ofGetWindowHeight()*3/4);
+        
+        player.pos=glm::vec3(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
+    }
     
     if (!bHide) {
         gui.draw();
     }
+    
+    player.draw();
+    shooter.draw();
 }
 
 //--------------------------------------------------------------
