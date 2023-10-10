@@ -35,10 +35,13 @@ void Shooter::spawnSprite() {
 void Shooter::moveSprite(Sprite* sprite) {
     ofApp* theApp = (ofApp*)ofGetAppPtr();
     glm::vec3 v = glm::normalize(theApp->player.pos - sprite->pos);
-    glm::vec3 u = glm::vec3(0, -1, 0);
+    glm::vec3 u = sprite->heading();
     float a = glm::orientedAngle(u, v, glm::vec3(0, 0, 1));
-    sprite->rot = glm::degrees(a);
-    sprite->velocity = glm::length(sprite->velocity) * v;
+
+    // a/100 to damp the instantaneous rotation of fire sprites
+    sprite->velocity=glm::rotate(sprite->velocity, a/100, glm::vec3(0,0,1));
+    sprite->rot += glm::degrees(a/100);
+    
     Emitter::moveSprite(sprite);
 }
 
