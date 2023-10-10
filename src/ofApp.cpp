@@ -82,7 +82,7 @@ void Shooter::update(){
 void ofApp::setup(){
     ofSetBackgroundColor(ofColor::black);
     font.load("fonts/pixeboy-font/Pixeboy-z8XGD.ttf", 20);
-    //    bgLoaded = bg.load("images/spaceBackground.png");
+    bgLoaded = bg.load("images/space-background.png");
     playerLoaded = playerImg.load("images/ship.png");
     if (playerLoaded) player.setImage(playerImg);
     player.distanceToHead();
@@ -168,9 +168,13 @@ void ofApp::draw(){
     }
     if(state==Finish){
         time=(gameEndTime-gameStartTime)/1000;
+        string score="Score:\t"+std::to_string(time);
+        string message="Press Space to restart game";
+        font.drawString(score,ofGetWindowWidth()/2-font.stringWidth(score)/2,(ofGetWindowHeight()*3/4)-font.stringHeight(message)-10);
+        font.drawString(message,ofGetWindowWidth()/2-font.stringWidth(message)/2,ofGetWindowHeight()*3/4);
     }
     
-    string topRight="Energy:\t"+std::to_string((int)player.energy)+"\nTime:\t"+std::to_string(time);
+    string topRight="Energy:\t"+std::to_string((int)player.energy)+"\t\tTime:\t"+std::to_string(time)+"\t\tFrame rate:\t"+std::to_string((int)ofGetFrameRate());
     font.drawString(topRight, ofGetWindowWidth()-font.stringWidth(topRight)-10, font.stringHeight("Energy: 100")+10);
     
     if(state==Landing){
