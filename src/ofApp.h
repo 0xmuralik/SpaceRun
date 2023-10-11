@@ -49,6 +49,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
         void gameStart();
         void gameStop();
+        void resetDefaults(int level);
     
         bool bHide;
         ofxFloatSlider energy;
@@ -85,16 +86,21 @@ class ofApp : public ofBaseApp{
         enum states{
             Landing,
             Started,
-            Finish,
-            LevelOne,
-            LevelTwo,
-            LevelThree
+            Finish
+        };
+    
+        enum levels{
+            Level1,
+            Level2,
+            Level3
         };
         
         ofTrueTypeFont font;
+        ofTrueTypeFont smallFont;
     
         float gameStartTime;
         float gameEndTime;
         
         states state;
+        levels level;
 };

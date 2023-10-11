@@ -15,11 +15,39 @@ void ofApp::gameStart(){
 }
 
 void ofApp::gameStop(){
-    if(state==Finish) return;
+    if(state==Finish||state==Landing) return;
     state=Finish;
     gameStarted=false;
     shooter.stop();
     gameEndTime=ofGetElapsedTimeMillis();
+}
+
+void ofApp::resetDefaults(int level){
+    if(level==0){
+        fireSpeed=2;
+        rate=0.5;
+        count=1;
+        life=5;
+        
+        playerSpeed=3;
+        playerRotation=1;
+    }
+    if(level==1){
+        fireSpeed=3;
+        rate=1;
+        count=2;
+        
+        playerSpeed=4;
+        playerRotation=1.5;
+    }
+    if(level==2){
+        fireSpeed=5;
+        rate=2;
+        count=2;
+        
+        playerSpeed=6;
+        playerRotation=2;
+    }
 }
 
 void Shooter::spawnSprite() {
@@ -36,11 +64,20 @@ void Shooter::moveSprite(Sprite* sprite) {
     ofApp* theApp = (ofApp*)ofGetAppPtr();
     glm::vec3 v = glm::normalize(theApp->player.pos - sprite->pos);
     glm::vec3 u = sprite->heading();
-    float a = glm::orientedAngle(u, v, glm::vec3(0, 0, 1));
+    glm::vec3 ref = glm::vec3(0,-1,0);
 
-    // a/100 to damp the instantaneous rotation of fire sprites
-    sprite->velocity=glm::rotate(sprite->velocity, a/100, glm::vec3(0,0,1));
-    sprite->rot += glm::degrees(a/100);
+    float vAngle = glm::orientedAngle(v, ref, glm::vec3(0,0,1));
+    float uAngle = glm::orientedAngle(u, ref, glm::vec3(0,0,1));
+    
+    if(vAngle<uAngle){
+        sprite->rot += 2;
+        sprite->velocity=glm::rotate(sprite->velocity, glm::radians(2.0f), glm::vec3(0,0,1));
+    }
+    else if(uAngle<vAngle){
+        sprite->rot -= 2;
+        sprite->velocity=glm::rotate(sprite->velocity, -glm::radians(2.0f), glm::vec3(0,0,1));
+    }
+    
     
     Emitter::moveSprite(sprite);
 }
@@ -85,6 +122,7 @@ void Shooter::update(){
 void ofApp::setup(){
     ofSetBackgroundColor(ofColor::black);
     font.load("fonts/pixeboy-font/Pixeboy-z8XGD.ttf", 20);
+    smallFont.load("fonts/pixeboy-font/Pixeboy-z8XGD.ttf", 10);
     bgLoaded = bg.load("images/space-background.png");
     playerLoaded = playerImg.load("images/ship.png");
     if (playerLoaded) player.setImage(playerImg);
@@ -114,6 +152,7 @@ void ofApp::setup(){
     shooter.drawable = false;
     
     state=Landing;
+    level=Level1;
 }
 
 //--------------------------------------------------------------
@@ -169,12 +208,25 @@ void ofApp::draw(){
     if(state!=Started){
         time=0;
     }
+    
+    if (!bHide) {
+        gui.draw();
+    }
+    
+    player.draw();
+    shooter.draw();
+    
     if(state==Finish){
         time=(gameEndTime-gameStartTime)/1000;
         string score="Score:\t"+std::to_string(time);
         string message="Press Space to restart game";
+        string levelMessage= "Level "+std::to_string(level+1)+"/3";
+        string changeLevelMessage="Use UP and DOWN arrows to change levels";
         font.drawString(score,ofGetWindowWidth()/2-font.stringWidth(score)/2,(ofGetWindowHeight()*3/4)-font.stringHeight(message)-10);
         font.drawString(message,ofGetWindowWidth()/2-font.stringWidth(message)/2,ofGetWindowHeight()*3/4);
+        font.drawString(levelMessage,ofGetWindowWidth()/2-font.stringWidth(levelMessage)/2,ofGetWindowHeight()*3/4+font.stringHeight(message)+10);
+        smallFont.drawString(changeLevelMessage, ofGetWindowWidth()/2-smallFont.stringWidth(changeLevelMessage)/2, ofGetWindowHeight()*3/4+font.stringHeight(message)+10+font.stringHeight(levelMessage)+10);
+        
     }
     
     string topRight="Energy:\t"+std::to_string((int)player.energy)+"\t\tTime:\t"+std::to_string(time)+"\t\tFrame rate:\t"+std::to_string((int)ofGetFrameRate());
@@ -184,15 +236,12 @@ void ofApp::draw(){
         string message = "Press Space to start game";
         font.drawString(message,ofGetWindowWidth()/2-font.stringWidth(message)/2,ofGetWindowHeight()*3/4);
         
+        string levelMessage= "Level "+std::to_string(level+1)+"/3";
+        string changeLevelMessage="Use UP and DOWN arrows to change levels";
+        font.drawString(levelMessage,ofGetWindowWidth()/2-font.stringWidth(levelMessage)/2,ofGetWindowHeight()*3/4+font.stringHeight(message)+10);
+        smallFont.drawString(changeLevelMessage, ofGetWindowWidth()/2-smallFont.stringWidth(changeLevelMessage)/2, ofGetWindowHeight()*3/4+font.stringHeight(message)+10+font.stringHeight(levelMessage)+10);
         player.pos=glm::vec3(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
     }
-    
-    if (!bHide) {
-        gui.draw();
-    }
-    
-    player.draw();
-    shooter.draw();
 }
 
 //--------------------------------------------------------------
@@ -212,6 +261,18 @@ void ofApp::keyPressed(int key){
             break;
         case ' ':
             gameStart();
+            break;
+        case OF_KEY_UP:
+            if(state!=Started&&level<2){
+                level=levels(level+1);
+                resetDefaults(level);
+            }
+            break;
+        case OF_KEY_DOWN:
+            if(state!=Started&&level>0){
+                level=levels(level-1);
+                resetDefaults(level);
+            }
             break;
     }
     
