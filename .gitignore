@@ -1,13 +1,1 @@
-*
-!/*/
-/*/*
-!/*/src
-!/*/src/*
-!.gitignore
-!**.mb
-!**.obj
-!**.mtl
-!**.png
-!**.ttf
-!*/src
-!*/bin/data/images/*
+
