@@ -35,7 +35,6 @@ void ofApp::resetDefaults(int level){
     if(level==1){
         fireSpeed=3;
         rate=1;
-        count=2;
         
         playerSpeed=4;
         playerRotation=1.5;
@@ -43,7 +42,6 @@ void ofApp::resetDefaults(int level){
     if(level==2){
         fireSpeed=5;
         rate=2;
-        count=2;
         
         playerSpeed=6;
         playerRotation=2;
@@ -70,12 +68,12 @@ void Shooter::moveSprite(Sprite* sprite) {
     float uAngle = glm::orientedAngle(u, ref, glm::vec3(0,0,1));
     
     if(vAngle<uAngle){
-        sprite->rot += 2;
-        sprite->velocity=glm::rotate(sprite->velocity, glm::radians(2.0f), glm::vec3(0,0,1));
+        sprite->rot += 1;
+        sprite->velocity=glm::rotate(sprite->velocity, glm::radians(1.0f), glm::vec3(0,0,1));
     }
     else if(uAngle<vAngle){
-        sprite->rot -= 2;
-        sprite->velocity=glm::rotate(sprite->velocity, -glm::radians(2.0f), glm::vec3(0,0,1));
+        sprite->rot -= 1;
+        sprite->velocity=glm::rotate(sprite->velocity, -glm::radians(1.0f), glm::vec3(0,0,1));
     }
     
     
@@ -123,12 +121,12 @@ void ofApp::setup(){
     ofSetBackgroundColor(ofColor::black);
     font.load("fonts/pixeboy-font/Pixeboy-z8XGD.ttf", 20);
     smallFont.load("fonts/pixeboy-font/Pixeboy-z8XGD.ttf", 10);
-    bgLoaded = bg.load("images/space-background.png");
-    playerLoaded = playerImg.load("images/ship.png");
+    bgLoaded = bg.load("images/spaceBackground.png");
+    playerLoaded = playerImg.load("images/ship-8bit.png");
     if (playerLoaded) player.setImage(playerImg);
     player.distanceToHead();
     
-    fireLoaded = fireImg.load("images/fire.png");
+    fireLoaded = fireImg.load("images/fire-8bit.png");
     if (fireLoaded) shooter.setChildImage(fireImg);
     
     gui.setup();
