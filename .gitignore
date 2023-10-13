@@ -7,5 +7,7 @@
 !**.mb
 !**.obj
 !**.mtl
+!**.png
+!**.ttf
 !*/src
-!/*/bin/data/*
+!/*/bin/data/images/*
