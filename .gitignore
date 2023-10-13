@@ -10,4 +10,4 @@
 !**.png
 !**.ttf
 !*/src
-!/*/bin/data/images/*
+!/bin/data/images/*
